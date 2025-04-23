@@ -1,94 +1,78 @@
 import java.util.Date;
 
 public class HotelRoomBooking {
+    private Customer customer;
+    private RoomBookingDetail bookingDetail;
+    private BookingDate bookingDate;
 
-    private String namaPemesan;
-    private String nomorKTP;
-    private String nomorTelepon;
-    private String email;
-    private String jenisKelamin;
-    private String jenisKamar;
-    private int jumlahTamu;
-    private int jumlahMalam;
-    private double hargaPerMalam;
-    private String kodeVoucher;
-    private boolean sudahDibayar;
-    private Date tanggalCheckin;
-    private Date tanggalCheckout;
-    private boolean statusAktif;
-
-    public HotelRoomBooking(String namaPemesan, String nomorKTP, String nomorTelepon, String email, String jenisKelamin,
-            String jenisKamar, int jumlahTamu, int jumlahMalam, double hargaPerMalam,
-            Date tanggalCheckin, Date tanggalCheckout, boolean statusAktif,
-            String kodeVoucher, boolean sudahDibayar) {
-
-        this.namaPemesan = namaPemesan;
-        this.nomorKTP = nomorKTP;
-        this.nomorTelepon = nomorTelepon;
-        this.email = email;
-        this.jenisKelamin = jenisKelamin;
-        this.jenisKamar = jenisKamar;
-        this.jumlahTamu = jumlahTamu;
-        this.jumlahMalam = jumlahMalam;
-        this.hargaPerMalam = hargaPerMalam;
-        this.tanggalCheckin = tanggalCheckin;
-        this.tanggalCheckout = tanggalCheckout;
-        this.statusAktif = statusAktif;
-        this.kodeVoucher = kodeVoucher;
-        this.sudahDibayar = sudahDibayar;
-    }
-
-    public void cetakDetailPemesanan() {
-        System.out.println("===== DETAIL PEMESANAN KAMAR =====");
-        System.out.println("Nama Pemesan : " + namaPemesan);
-        System.out.println("Jenis Kelamin: " + jenisKelamin);
-        System.out.println("No. KTP      : " + nomorKTP);
-        System.out.println("Telepon      : " + nomorTelepon);
-        System.out.println("Email        : " + email);
-        System.out.println("Jenis Kamar  : " + jenisKamar);
-        System.out.println("Jumlah Tamu  : " + jumlahTamu);
-        System.out.println("Jumlah Malam : " + jumlahMalam);
-        System.out.println("Harga/Malam  : " + hargaPerMalam);
-        System.out.println("Check-in     : " + tanggalCheckin);
-        System.out.println("Check-out    : " + tanggalCheckout);
-        System.out.println("Status Aktif : " + statusAktif);
-        System.out.println("Voucher      : " + kodeVoucher);
-        System.out.println("Sudah Dibayar: " + sudahDibayar);
-        System.out.println("Total Biaya  : Rp " + hitungTotalBiaya());
-        System.out.println("Tipe Tamu    : " + klasifikasiTamu());
-        System.out.println("===================================");
-    }
-
-    public void redeemVoucher(String kode) {
-    }
-
-    // Lazy Class
-    public void kirimEmailKonfirmasi() {
+    public HotelRoomBooking(Customer customer, RoomBookingDetail bookingDetail, BookingDate bookingDate) {
+        this.customer = customer;
+        this.bookingDetail = bookingDetail;
+        this.bookingDate = bookingDate;
     }
 
     public double hitungTotalBiaya() {
-        double total = hargaPerMalam * jumlahMalam;
-        if (jumlahTamu > 2) {
-            total += (jumlahTamu - 2) * 100000;
+        double total = bookingDetail.getHargaPerMalam() * bookingDetail.getJumlahMalam();
+        if (bookingDetail.getJumlahTamu() > 2) {
+            total += (bookingDetail.getJumlahTamu() - 2) * 100000;
         }
-        if (kodeVoucher != null && kodeVoucher.length() > 3) {
+        if (bookingDetail.getKodeVoucher() != null && bookingDetail.getKodeVoucher().length() > 3) {
             total -= 50000;
         }
-        if (!statusAktif) {
+        if (!bookingDate.isStatusAktif()) {
             total = 0;
         }
         return total;
     }
 
     public String klasifikasiTamu() {
-        if (jumlahTamu == 1)
-            return "Individu";
-        else if (jumlahTamu == 2)
-            return "Pasangan";
-        else
-            return "Keluarga";
+        int jumlahTamu = bookingDetail.getJumlahTamu();
+        if (jumlahTamu == 1) return "Individu";
+        else if (jumlahTamu == 2) return "Pasangan";
+        else return "Keluarga";
     }
 
+    @Override
+    public String toString() {
+        return """
+            ===== DETAIL PEMESANAN KAMAR =====
+            Nama Pemesan : %s
+            Jenis Kelamin: %s
+            No. KTP      : %s
+            Telepon      : %s
+            Email        : %s
+            Jenis Kamar  : %s
+            Jumlah Tamu  : %d
+            Jumlah Malam : %d
+            Harga/Malam  : %.2f
+            Check-in     : %s
+            Check-out    : %s
+            Status Aktif : %b
+            Voucher      : %s
+            Sudah Dibayar: %b
+            Total Biaya  : Rp %.2f
+            Tipe Tamu    : %s
+            ===================================
+        """.formatted(
+            customer.getNama(),
+            customer.getJenisKelamin(),
+            customer.getNomorKTP(),
+            customer.getNomorTelepon(),
+            customer.getEmail(),
+            bookingDetail.getJenisKamar(),
+            bookingDetail.getJumlahTamu(),
+            bookingDetail.getJumlahMalam(),
+            bookingDetail.getHargaPerMalam(),
+            bookingDate.getCheckIn(),
+            bookingDate.getCheckOut(),
+            bookingDate.isStatusAktif(),
+            bookingDetail.getKodeVoucher(),
+            bookingDetail.isSudahDibayar(),
+            hitungTotalBiaya(),
+            klasifikasiTamu()
+        );
+    }
+}
     public String getNamaPemesan() {
         return namaPemesan;
     }
